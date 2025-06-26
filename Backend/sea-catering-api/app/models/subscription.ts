@@ -14,16 +14,10 @@ export default class Subscription extends BaseModel {
   @column()
   declare planId: string
 
-  @column({
-    consume: (value: string) => JSON.parse(value),
-    prepare: (value: string[]) => JSON.stringify(value),
-  })
+  @column()
   declare mealTypes: string[]
 
-  @column({
-    consume: (value: string) => JSON.parse(value),
-    prepare: (value: string[]) => JSON.stringify(value),
-  })
+  @column()
   declare deliveryDays: string[]
 
   @column()
@@ -59,6 +53,9 @@ export default class Subscription extends BaseModel {
   @belongsTo(() => User)
   declare user: BelongsTo<typeof User>
 
-  @belongsTo(() => MealPlan)
+  @belongsTo(() => MealPlan, {
+    foreignKey: 'planId', // ← nama kolom di Subscription
+    localKey: 'id', // ← default id milik MealPlan
+  })
   declare mealPlan: BelongsTo<typeof MealPlan>
 }

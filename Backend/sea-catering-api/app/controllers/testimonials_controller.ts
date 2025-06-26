@@ -13,26 +13,30 @@ export default class TestimonialsController {
   async store({ request, response }: HttpContext) {
     try {
       const payload = await request.validateUsing(testimonialValidator)
-      
+
       const testimonial = await this.testimonialService.submitTestimonial(payload)
-      
+
       const result = {
         id: testimonial.id,
         customer_name: testimonial.customerName,
         review_message: testimonial.reviewMessage,
         rating: testimonial.rating,
-        status: testimonial.status
+        status: testimonial.status,
       }
 
-      return response.status(201).json(
-        ApiResponse.success(result, 'Testimonial submitted successfully, awaiting approval.', 201)
-      )
+      return response
+        .status(201)
+        .json(
+          ApiResponse.success(result, 'Testimonial submitted successfully, awaiting approval.', 201)
+        )
     } catch (error) {
-      return response.status(400).json(
-        ApiResponse.validationError([
-          { field: 'general', message: 'Failed to submit testimonial.' }
-        ])
-      )
+      return response
+        .status(400)
+        .json(
+          ApiResponse.validationError([
+            { field: 'general', message: 'Failed to submit testimonial.' },
+          ])
+        )
     }
   }
 
@@ -40,24 +44,30 @@ export default class TestimonialsController {
     try {
       const limit = request.input('limit')
       const offset = request.input('offset')
-      
+
       const testimonials = await this.testimonialService.getApprovedTestimonials(limit, offset)
-      
-      const formattedTestimonials = testimonials.map(testimonial => ({
-        id: testimonial.id,
-        customer_name: testimonial.customerName,
-        review_message: testimonial.reviewMessage,
-        rating: testimonial.rating,
-        status: testimonial.status
-      }))
+
+      const formattedTestimonials = testimonials.map(
+        (testimonial: {
+          id: any
+          customerName: any
+          reviewMessage: any
+          rating: any
+          status: any
+        }) => ({
+          id: testimonial.id,
+          customer_name: testimonial.customerName,
+          review_message: testimonial.reviewMessage,
+          rating: testimonial.rating,
+          status: testimonial.status,
+        })
+      )
 
       return response.json(
         ApiResponse.success(formattedTestimonials, 'Testimonials retrieved successfully.')
       )
     } catch (error) {
-      return response.status(500).json(
-        ApiResponse.serverError()
-      )
+      return response.status(500).json(ApiResponse.serverError())
     }
   }
 }

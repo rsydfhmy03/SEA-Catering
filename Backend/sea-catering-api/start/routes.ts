@@ -37,5 +37,18 @@ router
         router.get('/', '#controllers/testimonials_controller.index')
       })
       .prefix('/testimonials')
+    // User Subscriptions Routes
+    router
+      .group(() => {
+        router.post('/', '#controllers/subscriptions_controller.store')
+        router.get(
+          '/me/subscriptions',
+          '#controllers/subscriptions_controller.getUserSubscriptions'
+        )
+        router.put('/:id/pause', '#controllers/subscriptions_controller.pause')
+        router.delete('/:id', '#controllers/subscriptions_controller.cancel')
+      })
+      .prefix('/subscriptions')
+      .use(middleware.auth())
   })
   .prefix('/api/v1')
