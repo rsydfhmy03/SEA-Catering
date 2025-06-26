@@ -10,12 +10,32 @@
 import router from '@adonisjs/core/services/router'
 import { middleware } from './kernel.js'
 
-// Auth Routes
+// Version 1 API routes
 router
   .group(() => {
-    router.post('/register', '#controllers/auth_controller.register')
-    router.post('/login', '#controllers/auth_controller.login')
-    router.post('/logout', '#controllers/auth_controller.logout').use(middleware.auth())
+    // Auth routes
+    router
+      .group(() => {
+        router.post('/register', '#controllers/auth_controller.register')
+        router.post('/login', '#controllers/auth_controller.login')
+        router.post('/logout', '#controllers/auth_controller.logout').use(middleware.auth())
+      })
+      .prefix('/auth')
+
+    // Meal plans routes
+    router
+      .group(() => {
+        router.get('/', '#controllers/meal_plans_controller.index')
+        router.get('/:id', '#controllers/meal_plans_controller.show')
+      })
+      .prefix('/meal-plans')
+
+    // Testimonials Routes
+    router
+      .group(() => {
+        router.post('/', '#controllers/testimonials_controller.store')
+        router.get('/', '#controllers/testimonials_controller.index')
+      })
+      .prefix('/testimonials')
   })
-  .prefix('/auth')
   .prefix('/api/v1')
