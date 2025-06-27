@@ -2,7 +2,7 @@
 
 API ini menyediakan akses terprogram ke fungsionalitas aplikasi SEA Catering, meliputi manajemen pengguna, rencana makan, testimonial, dan langganan.
 
-**Base URL:** `https://api.seacatering.com/v1` (Contoh)
+**Base URL:** `https://api.seacatering.com/api/v1` (Contoh)
 
 ---
 
@@ -441,7 +441,7 @@ Authentication is handled via JWT (JSON Web Tokens). After successful login, a t
 ### 4.2. Get User's Active Subscriptions
 
 * **Method:** `GET`
-* **Endpoint:** `/users/me/subscriptions`
+* **Endpoint:** `/subscriptions/me/subscriptions`
 * **Description:** Retrieves all active subscriptions for the authenticated user.
 * **Authorization:** Required (Bearer Token)
 * **Request Body:** None
