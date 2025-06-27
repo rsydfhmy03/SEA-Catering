@@ -50,5 +50,24 @@ router
       })
       .prefix('/subscriptions')
       .use(middleware.auth())
+
+    // Admin Routes (Protected + Admin Only)
+    router
+      .group(() => {
+        // Dashboard
+        router.get('/dashboard/metrics', '#controllers/admin/dashboard_controller.getMetrics')
+
+        // Users Management
+        router.get('/users', '#controllers/admin/users_controller.index')
+        router.put('/users/:id/role', '#controllers/admin/users_controller.updateRole')
+
+        // Testimonials Management
+        router.put(
+          '/testimonials/:id/approve',
+          '#controllers/admin/testimonials_controller.approve'
+        )
+      })
+      .prefix('/admin')
+      .use([middleware.auth(), middleware.admin()])
   })
   .prefix('/api/v1')
