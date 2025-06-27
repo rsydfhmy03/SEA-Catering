@@ -21,7 +21,7 @@ const LoginPage = () => {
             const data = await login({ email, password });
             dispatch(setCredentials(data));
             toast.success('Login successful!');
-            navigate('/subscription'); // Langsung ke halaman langganan
+            navigate('/dashboard'); 
         } catch (error: unknown) {
             if (typeof error === 'object' && error !== null && 'response' in error) {
                 const errorResponse = error as { response?: { data?: { message?: string } } };
