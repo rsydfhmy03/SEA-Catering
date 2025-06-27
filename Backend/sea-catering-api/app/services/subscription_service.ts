@@ -38,8 +38,8 @@ export default class SubscriptionService extends BaseService {
     const subscription = await this.repository.create({
       userId: userId,
       planId: data.plan_id,
-      mealTypes: data.meal_types,
-      deliveryDays: data.delivery_days,
+      mealTypes: JSON.stringify(data.meal_types),
+      deliveryDays: JSON.stringify(data.delivery_days),
       allergies: data.allergies || null,
       phoneNumber: data.phone_number,
       totalPrice: totalPrice,
