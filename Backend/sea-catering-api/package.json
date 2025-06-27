@@ -7,13 +7,16 @@
   "scripts": {
     "start": "node bin/server.js",
     "build": "node ace build",
-    "dev": "node ace serve --hmr",
+    "dev": "node ace serve --watch",
     "test": "node ace test",
-    "lint": "eslint .",
+    "lint": "eslint . --fix",
     "format": "prettier --write .",
     "typecheck": "tsc --noEmit"
   },
   "imports": {
+    "#app/*": "./app/*.js",
+    "#repositories/*": "./app/repositories/*.js",
+    "#base/*": "./app/base/*.js",
     "#controllers/*": "./app/controllers/*.js",
     "#exceptions/*": "./app/exceptions/*.js",
     "#models/*": "./app/models/*.js",
@@ -50,6 +53,7 @@
     "pino-pretty": "^13.0.0",
     "prettier": "^3.5.3",
     "ts-node-maintained": "^10.9.5",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "~5.8"
   },
   "dependencies": {
