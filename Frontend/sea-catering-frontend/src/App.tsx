@@ -13,6 +13,7 @@ import AdminRoute from './components/common/AdminRoute';
 import DashboardLayout from './pages/dashboard/DashboardLayout';
 import UserDashboardPage from './pages/dashboard/UserDashboardPage';
 import AdminDashboardPage from './pages/dashboard/AdminDashboardPage';
+import UserManagementPage from './pages/dashboard/UserManagementPage';
 
 function App() {
   return (
@@ -59,7 +60,7 @@ function App() {
           }
         >
           <Route path="dashboard" element={<AdminDashboardPage />} />
-          {/* <Route path="users" element={<UserManagementPage />} /> */}
+          <Route path="users" element={<UserManagementPage />} />
         </Route>
 
       </Routes>
