@@ -1,4 +1,8 @@
 import { Zap, Leaf, Truck, HeartHandshake , ArrowRight, CheckCircle } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import TestimonialForm from '../../components/forms/TestimonialForm';
+import { getApprovedTestimonials, type Testimonial } from '../../services/api/testimonialsApi';
+import { Star } from 'lucide-react';
 
 // Enhanced animated SVG
 const HeroVector = () => (
@@ -31,6 +35,54 @@ const HeroVector = () => (
         </svg>
     </div>
 );
+
+const TestimonialsSection = () => {
+    const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+    const [key, setKey] = useState(0); // Untuk me-refresh list
+
+    const fetchTestimonials = async () => {
+         try {
+            const data = await getApprovedTestimonials();
+            setTestimonials(data);
+         // eslint-disable-next-line @typescript-eslint/no-unused-vars
+         } catch (error) {
+            console.error("Could not fetch testimonials");
+         }
+    };
+
+    useEffect(() => {
+        fetchTestimonials();
+    }, [key]);
+
+    return (
+        <section className="py-16 sm:py-20 bg-green-50">
+            <div className="container mx-auto px-6">
+                <div className="text-center mb-12">
+                    <h2 className="text-3xl font-bold text-gray-800">What Our Customers Say</h2>
+                    <p className="text-gray-600 mt-2">Real stories from our satisfied customers.</p>
+                </div>
+
+                {/* Testimonial Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+                    {testimonials.length > 0 ? testimonials.map(t => (
+                        <div key={t.id} className="bg-white p-6 rounded-lg shadow-lg">
+                            <div className="flex items-center mb-2">
+                                {[...Array(5)].map((_, i) => (
+                                    <Star key={i} className={`h-5 w-5 ${i < t.rating ? 'text-yellow-400 fill-current' : 'text-gray-300'}`} />
+                                ))}
+                            </div>
+                            <p className="text-gray-600 italic mb-4">"{t.review_message}"</p>
+                            <p className="font-bold text-right">- {t.customer_name}</p>
+                        </div>
+                    )) : <p className="col-span-full text-center text-gray-500">No reviews yet. Be the first!</p>}
+                </div>
+
+                {/* Testimonial Form */}
+                <TestimonialForm onTestimonialAdded={() => setKey(prev => prev + 1)} />
+            </div>
+        </section>
+    );
+}
 
 const HomePage = () => {
   return (
@@ -193,7 +245,8 @@ const HomePage = () => {
           </div>
         </div>
       </section>
-
+      {/* Testimonials Section */}
+      <TestimonialsSection />
     </>
   );
 };
