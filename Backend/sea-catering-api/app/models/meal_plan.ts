@@ -3,24 +3,24 @@ import { BaseModel, column, hasMany } from '@adonisjs/lucid/orm'
 import type { HasMany } from '@adonisjs/lucid/types/relations'
 import Subscription from './subscription.js'
 
-export default class User extends BaseModel {
+export default class MealPlan extends BaseModel {
   @column({ isPrimary: true })
   declare id: string
 
   @column()
-  declare fullName: string
+  declare name: string
 
   @column()
-  declare email: string
-
-  @column({ serializeAs: null })
-  declare password: string
+  declare price: number
 
   @column()
-  declare role: 'user' | 'admin'
+  declare description: string
 
-  @column.dateTime()
-  declare emailVerifiedAt: DateTime | null
+  @column()
+  declare imageUrl: string | null
+
+  @column()
+  declare isActive: boolean
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
@@ -30,5 +30,4 @@ export default class User extends BaseModel {
 
   @hasMany(() => Subscription)
   declare subscriptions: HasMany<typeof Subscription>
-  static role: string
 }
