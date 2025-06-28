@@ -17,10 +17,28 @@ export default class SubscriptionRepository extends BaseRepository {
         .preload('mealPlan')
         .orderBy('created_at', 'desc')
       const result = await query
-      console.log('Raw result from query:', result) // log ini ga muncul
+      console.log('Raw result from query:', result)
       return result
     } catch (error) {
       console.error('Error fetching active subscriptions:', error)
+      return error
+    }
+  }
+
+  async getUserPausedSubscriptions(userId: string) {
+    console.log('Fetching paused subscriptions for user in repository:', userId)
+    try {
+      const query = this.model
+        .query()
+        .where('user_id', userId)
+        .where('status', 'paused')
+        .preload('mealPlan')
+        .orderBy('created_at', 'desc')
+      const result = await query
+      console.log('Raw result from query:', result)
+      return result
+    } catch (error) {
+      console.error('Error fetching paused subscriptions:', error)
       return error
     }
   }
