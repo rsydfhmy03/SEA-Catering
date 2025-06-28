@@ -21,7 +21,12 @@ const LoginPage = () => {
             const data = await login({ email, password });
             dispatch(setCredentials(data));
             toast.success('Login successful!');
-            navigate('/dashboard'); 
+            // Redirect based on user role
+            if (data.user.role === 'admin') {
+                navigate('/admin/dashboard'); // Redirect to admin dashboard
+                return;
+            }
+            navigate('/dashboard');
         } catch (error: unknown) {
             if (typeof error === 'object' && error !== null && 'response' in error) {
                 const errorResponse = error as { response?: { data?: { message?: string } } };

@@ -7,6 +7,7 @@ export interface SubscriptionData {
     allergies: string;
     phone_number: string;
 }
+
 export interface Subscription {
     id: string;
     plan_name: string;
@@ -16,6 +17,8 @@ export interface Subscription {
     status: 'active' | 'paused' | 'cancelled';
     start_date: string;
     end_date: string;
+    pause_start_date?: string;
+    pause_end_date?: string;
 }
 
 export const createSubscription = async (data: SubscriptionData) => {
@@ -25,6 +28,11 @@ export const createSubscription = async (data: SubscriptionData) => {
 
 export const getUserSubscriptions = async (): Promise<Subscription[]> => {
     const response = await apiClient.get('/subscriptions/me/subscriptions');
+    return response.data.data;
+};
+
+export const getUserPausedSubscriptions = async (): Promise<Subscription[]> => {
+    const response = await apiClient.get('/subscriptions/me/subscriptions/paused');
     return response.data.data;
 };
 

@@ -1,44 +1,37 @@
-import { NavLink, Outlet } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { selectCurrentUser } from '../../store/slices/authSlice';
-import { LayoutGrid, BarChart, User } from 'lucide-react';
+import { useState } from 'react';
+import { Outlet } from 'react-router-dom';
+import DashboardHeader from '../../components/layout/DashboardHeader';
+import DashboardSidebar from '../../components/layout/DashboardSidebar';
 
 const DashboardLayout = () => {
-    const user = useSelector(selectCurrentUser);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-    const commonLinks = [
-        { name: 'My Subscriptions', path: '/dashboard', icon: LayoutGrid },
-    ];
-    const adminLinks = [
-        { name: 'Metrics', path: '/admin/dashboard', icon: BarChart },
-        { name: 'User Management', path: '/admin/users', icon: User },
-    ];
+    const toggleSidebar = () => {
+        setIsSidebarOpen(!isSidebarOpen);
+    };
 
-    const linksToRender = user?.role === 'admin' ? [...commonLinks, ...adminLinks] : commonLinks;
-    const activeClass = 'bg-green-100 text-green-700';
-    const defaultClass = 'text-gray-600 hover:bg-gray-100 hover:text-gray-900';
+    const closeSidebar = () => {
+        setIsSidebarOpen(false);
+    };
 
     return (
-        <div className="flex min-h-[calc(100vh-68px)]">
+        <div className="flex h-screen bg-gray-50">
             {/* Sidebar */}
-            <aside className="w-64 bg-white border-r hidden md:flex flex-col">
-                <div className="p-4">
-                    <h2 className="text-lg font-bold">Dashboard</h2>
-                </div>
-                <nav className="flex-1 px-2 space-y-1">
-                    {linksToRender.map((link) => (
-                        <NavLink key={link.name} to={link.path} end className={({isActive}) => `${isActive ? activeClass : defaultClass} group flex items-center px-2 py-2 text-sm font-medium rounded-md`}>
-                            <link.icon className="mr-3 h-6 w-6" />
-                            {link.name}
-                        </NavLink>
-                    ))}
-                </nav>
-            </aside>
+            <DashboardSidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
 
-            {/* Main Content */}
-            <main className="flex-1 bg-gray-50 p-6">
-                <Outlet />
-            </main>
+            {/* Main Content Area */}
+            <div className="flex-1 flex flex-col min-w-0">
+                {/* Header */}
+                <DashboardHeader 
+                    onToggleSidebar={toggleSidebar} 
+                    isSidebarOpen={isSidebarOpen} 
+                />
+
+                {/* Main Content */}
+                <main className="flex-1 overflow-auto p-6">
+                    <Outlet />
+                </main>
+            </div>
         </div>
     );
 };

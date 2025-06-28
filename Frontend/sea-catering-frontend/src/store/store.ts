@@ -3,6 +3,7 @@ import authReducer from './slices/authSlice';
 import subscriptionsReducer from './slices/subscriptionsSlice';
 import adminReducer from './slices/adminSlice';
 import userManagementReducer from './slices/userManagementSlice';
+import testimonialManagementReducer from './slices/testimonialManagementSlice'; 
 
 export const store = configureStore({
     reducer: {
@@ -10,6 +11,7 @@ export const store = configureStore({
         subscriptions: subscriptionsReducer,
         admin: adminReducer,
         userManagement: userManagementReducer,
+        testimonialManagement: testimonialManagementReducer,
     },
 });
 

@@ -75,6 +75,7 @@ const Header = () => {
                             <span className="text-gray-700 font-medium max-w-24 truncate">
                                 Hi, {user.full_name.split(' ')[0]}!
                             </span>
+                            
                             <ChevronDown className={`h-4 w-4 text-gray-500 transition-transform duration-200 ${isUserMenuOpen ? 'rotate-180' : ''}`} />
                         </button>
 
@@ -86,6 +87,20 @@ const Header = () => {
                                 <p className="text-sm font-semibold text-gray-900">{user.full_name}</p>
                                 <p className="text-xs text-gray-500 truncate">{user.email}</p>
                             </div>
+                            {user.role === 'admin' && (
+                                <Link
+                                    to="/admin/dashboard"
+                                    className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-green-50 transition-colors duration-200 flex items-center space-x-2"
+                                >
+                                    <span className="font-medium">Dashboard</span>
+                                </Link>
+                            )}
+                            <Link
+                                to="/dashboard"
+                                className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-green-50 transition-colors duration-200 flex items-center space-x-2"
+                            >
+                                <span className="font-medium">Dashboard</span>
+                            </Link>
                             <button
                                 onClick={handleLogout}
                                 className="w-full text-left px-4 py-3 text-sm text-red-700 hover:bg-red-50 transition-colors duration-200 flex items-center space-x-2"
