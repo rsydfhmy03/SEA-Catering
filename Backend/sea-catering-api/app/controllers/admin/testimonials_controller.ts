@@ -9,6 +9,26 @@ export default class AdminTestimonialsController {
     this.testimonialRepository = new TestimonialRepository()
   }
 
+  async index({ request, response }: HttpContext) {
+    try {
+      const testimonials = await this.testimonialRepository.findAll()
+
+      const formattedTestimonials = testimonials.map((testimonial: any) => ({
+        id: testimonial.id,
+        customer_name: testimonial.customerName,
+        review_message: testimonial.reviewMessage,
+        rating: testimonial.rating,
+        status: testimonial.status,
+      }))
+
+      return response.json(
+        ApiResponse.success(formattedTestimonials, 'Testimonials retrieved successfully.')
+      )
+    } catch (error) {
+      return response.status(500).json(ApiResponse.serverError())
+    }
+  }
+
   async approve({ params, response }: HttpContext) {
     try {
       const testimonial = await this.testimonialRepository.approveTestimonial(params.id)

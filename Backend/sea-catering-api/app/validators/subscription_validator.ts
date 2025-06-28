@@ -16,6 +16,6 @@ export const subscriptionValidator = vine.compile(
 export const pauseSubscriptionValidator = vine.compile(
   vine.object({
     pause_start_date: vine.date({ formats: ['YYYY-MM-DD'] }),
-    pause_end_date: vine.date({ formats: ['YYYY-MM-DD'] }),
+    pause_end_date: vine.date({ formats: ['YYYY-MM-DD'] }).afterField('pause_start_date'),
   })
 )

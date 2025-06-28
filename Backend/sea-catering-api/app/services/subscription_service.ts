@@ -38,8 +38,8 @@ export default class SubscriptionService extends BaseService {
     const subscription = await this.repository.create({
       userId: userId,
       planId: data.plan_id,
-      mealTypes: data.meal_types,
-      deliveryDays: data.delivery_days,
+      mealTypes: JSON.stringify(data.meal_types),
+      deliveryDays: JSON.stringify(data.delivery_days),
       allergies: data.allergies || null,
       phoneNumber: data.phone_number,
       totalPrice: totalPrice,
@@ -86,6 +86,28 @@ export default class SubscriptionService extends BaseService {
       }))
     } catch (error) {
       console.error('Error fetching user subscriptions:', error)
+      return error
+    }
+  }
+
+  async getUserPausedSubscriptions(userId: string) {
+    try {
+      const subscriptions = await this.repository.getUserPausedSubscriptions(userId)
+      if (subscriptions.length === 0) {
+        return []
+      }
+      return subscriptions.map((sub: any) => ({
+        id: sub.id,
+        plan_name: sub.mealPlan.name,
+        meal_types: sub.mealTypes,
+        delivery_days: sub.deliveryDays,
+        total_price: sub.totalPrice,
+        status: sub.status,
+        pause_start_date: DateTime.fromJSDate(new Date(sub.pauseStartDate)).toISODate(),
+        pause_end_date: DateTime.fromJSDate(new Date(sub.pauseEndDate)).toISODate(),
+        allergies: sub.allergies,
+      }))
+    } catch (error) {
       return error
     }
   }

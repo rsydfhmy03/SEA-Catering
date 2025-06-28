@@ -1,6 +1,6 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import type { NextFn } from '@adonisjs/core/types/http'
-import { ApiResponse } from '#base/responses/api_response.js'
+import { ApiResponse } from '#base/responses/api_response'
 
 export default class AdminMiddleware {
   async handle({ request, response }: HttpContext, next: NextFn) {

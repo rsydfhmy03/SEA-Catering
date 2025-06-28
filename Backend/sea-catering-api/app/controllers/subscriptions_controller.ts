@@ -63,6 +63,23 @@ export default class SubscriptionsController {
     }
   }
 
+  async getUserPausedSubscriptions({ response, request }: HttpContext) {
+    try {
+      const userId = request.user?.userId
+      console.log('Fetching paused subscriptions for user:', userId)
+      if (!userId) {
+        return response.status(401).json(ApiResponse.unauthorized('User not authenticated.'))
+      }
+      const subscriptions = await this.subscriptionService.getUserPausedSubscriptions(userId)
+
+      return response.json(
+        ApiResponse.success(subscriptions, 'User paused subscriptions retrieved successfully.')
+      )
+    } catch (error) {
+      return response.status(500).json(ApiResponse.serverError())
+    }
+  }
+
   async pause({ params, request, response, auth }: HttpContext) {
     try {
       const payload = await request.validateUsing(pauseSubscriptionValidator)
@@ -73,15 +90,21 @@ export default class SubscriptionsController {
         pause_end_date: payload.pause_end_date.toISOString(),
       })
 
+      // Convert dates to ISO strings if they exist
       const result = {
         id: subscription.id,
         status: subscription.status,
-        pause_start_date: subscription.pauseStartDate?.toISODate(),
-        pause_end_date: subscription.pauseEndDate?.toISODate(),
+        pause_start_date: subscription.pauseStartDate
+          ? new Date(subscription.pauseStartDate).toISOString().split('T')[0]
+          : null,
+        pause_end_date: subscription.pauseEndDate
+          ? new Date(subscription.pauseEndDate).toISOString().split('T')[0]
+          : null,
       }
 
       return response.json(ApiResponse.success(result, 'Subscription paused successfully.'))
     } catch (error) {
+      console.error('Pause subscription error:', error)
       if (error.message === 'Subscription not found or unauthorized') {
         return response
           .status(403)
@@ -98,7 +121,9 @@ export default class SubscriptionsController {
           )
       }
 
-      return response.status(400).json(ApiResponse.error('Invalid pause date range.'))
+      return response
+        .status(400)
+        .json(ApiResponse.error(error.message || 'Invalid pause date range.'))
     }
   }
 

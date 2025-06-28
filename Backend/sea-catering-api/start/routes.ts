@@ -45,6 +45,10 @@ router
           '/me/subscriptions',
           '#controllers/subscriptions_controller.getUserSubscriptions'
         )
+        router.get(
+          '/me/subscriptions/paused',
+          '#controllers/subscriptions_controller.getUserPausedSubscriptions'
+        )
         router.put('/:id/pause', '#controllers/subscriptions_controller.pause')
         router.delete('/:id', '#controllers/subscriptions_controller.cancel')
       })
@@ -62,6 +66,7 @@ router
         router.put('/users/:id/role', '#controllers/admin/users_controller.updateRole')
 
         // Testimonials Management
+        router.get('/testimonials', '#controllers/admin/testimonials_controller.index')
         router.put(
           '/testimonials/:id/approve',
           '#controllers/admin/testimonials_controller.approve'
