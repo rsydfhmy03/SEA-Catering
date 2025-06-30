@@ -15,6 +15,7 @@ import UserDashboardPage from './pages/dashboard/UserDashboardPage';
 import AdminDashboardPage from './pages/dashboard/AdminDashboardPage';
 import UserManagementPage from './pages/dashboard/UserManagementPage';
 import TestimonialManagementPage from './pages/dashboard/TestimonialManagementPage';
+import NotFoundPage from './components/errors/NotFoundPage';
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
       <Toaster position="top-center" reverseOrder={false} />
       {/* Hapus <Layout> dari sini */}
       <Routes>
+        <Route path="*" element={<NotFoundPage />} />
         {/* --- GRUP 1: Rute dengan Layout Publik (Header + Footer) --- */}
         <Route element={<Layout />}>
           <Route path="/" element={<HomePage />} />
