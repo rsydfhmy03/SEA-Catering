@@ -82,7 +82,7 @@ const TestimonialsSection = () => {
             }
         };
         
-        scrollIntervalRef.current = setInterval(autoScroll, 500);
+        scrollIntervalRef.current = setInterval(autoScroll, 3000);
         
         return () => {
             if (scrollIntervalRef.current) {
