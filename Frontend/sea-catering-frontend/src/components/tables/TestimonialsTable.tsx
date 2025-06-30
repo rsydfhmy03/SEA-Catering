@@ -19,7 +19,6 @@ import {
     User, 
     MessageSquare, 
     ThumbsUp,
-    AlertCircle,
     Check,
     X
 } from 'lucide-react';

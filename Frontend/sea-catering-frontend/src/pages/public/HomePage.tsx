@@ -230,12 +230,12 @@ const HomePage = () => {
             
             {/* Call to action buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
-              <button className="px-8 py-4 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 flex items-center gap-2 justify-center">
+              <a href="/subscription" className="px-8 py-4 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 flex items-center gap-2 justify-center">
                 Start Now <ArrowRight className="w-5 h-5" />
-              </button>
-              <button className="px-8 py-4 bg-white/90 backdrop-blur-sm text-green-700 font-semibold rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 border border-green-200">
+              </a>
+              <a href="/menu" className="px-8 py-4 bg-white/90 backdrop-blur-sm text-green-700 font-semibold rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 border border-green-200">
                 View Menu
-              </button>
+              </a>
             </div>
           </div>
         </div>
