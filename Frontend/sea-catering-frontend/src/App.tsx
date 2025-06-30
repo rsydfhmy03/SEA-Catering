@@ -15,14 +15,14 @@ import UserDashboardPage from './pages/dashboard/UserDashboardPage';
 import AdminDashboardPage from './pages/dashboard/AdminDashboardPage';
 import UserManagementPage from './pages/dashboard/UserManagementPage';
 import TestimonialManagementPage from './pages/dashboard/TestimonialManagementPage';
+import NotFoundPage from './components/errors/NotFoundPage';
 
 function App() {
   return (
     <Router>
       <Toaster position="top-center" reverseOrder={false} />
-      {/* Hapus <Layout> dari sini */}
       <Routes>
-        {/* --- GRUP 1: Rute dengan Layout Publik (Header + Footer) --- */}
+        <Route path="*" element={<NotFoundPage />} />
         <Route element={<Layout />}>
           <Route path="/" element={<HomePage />} />
           <Route path="/menu" element={<MenuPage />} />
@@ -39,7 +39,6 @@ function App() {
           />
         </Route>
 
-        {/* --- GRUP 2: Rute dengan Layout Dasbor (Sidebar + Content) --- */}
         <Route 
           path="/dashboard" 
           element={
@@ -48,10 +47,10 @@ function App() {
             </ProtectedRoute>
           }
         >
+          <Route path="*" element={<NotFoundPage />} />
           <Route index element={<UserDashboardPage />} />
         </Route>
         
-        {/* --- GRUP 3: Rute Admin dengan Layout Dasbor --- */}
         <Route 
           path="/admin" 
           element={
@@ -60,6 +59,7 @@ function App() {
             </AdminRoute>
           }
         >
+           <Route path="*" element={<NotFoundPage />} />
           <Route path="dashboard" element={<AdminDashboardPage />} />
           <Route path="users" element={<UserManagementPage />} />
           <Route path="testimonials" element={<TestimonialManagementPage />} />

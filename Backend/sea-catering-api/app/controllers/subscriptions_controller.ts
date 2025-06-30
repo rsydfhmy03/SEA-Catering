@@ -80,7 +80,7 @@ export default class SubscriptionsController {
     }
   }
 
-  async pause({ params, request, response, auth }: HttpContext) {
+  async pause({ params, request, response }: HttpContext) {
     try {
       const payload = await request.validateUsing(pauseSubscriptionValidator)
       const userId = request.user?.userId

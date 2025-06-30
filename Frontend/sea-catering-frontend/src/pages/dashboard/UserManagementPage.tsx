@@ -2,7 +2,8 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import type { AppDispatch, RootState } from '../../store/store';
 import { getAllUsers } from '../../store/slices/userManagementSlice';
-import { UsersTable } from '../../components/tables/UsersTable'; 
+import { UsersTable } from '../../components/tables/UsersTable';
+import { Users, Shield, Search, UserCheck } from 'lucide-react';
 
 const UserManagementPage = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -14,11 +15,103 @@ const UserManagementPage = () => {
         }
     }, [status, dispatch]);
 
+    const totalUsers = users.length;
+    const adminCount = users.filter(user => user.role === 'admin').length;
+    const userCount = users.filter(user => user.role === 'user').length;
+
     return (
-        <div>
-            <h1 className="text-3xl font-bold mb-6">User Management</h1>
-            {status === 'loading' && <p>Loading users...</p>}
-            {status === 'succeeded' && <UsersTable data={users} />}
+        <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 p-6">
+            <div className="max-w-7xl mx-auto">
+                {/* Header Section */}
+                <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-green-100 p-8 mb-8">
+                    <div className="flex items-center justify-between mb-6">
+                        <div className="flex items-center space-x-4">
+                            <div className="bg-gradient-to-br from-green-500 to-emerald-600 p-4 rounded-2xl shadow-lg">
+                                <Users className="w-8 h-8 text-white" />
+                            </div>
+                            <div>
+                                <h1 className="text-4xl font-bold bg-gradient-to-r from-green-700 to-emerald-600 bg-clip-text text-transparent">
+                                    User Management
+                                </h1>
+                                <p className="text-gray-600 mt-2">Manage user roles and permissions</p>
+                            </div>
+                        </div>
+                        
+                        {/* Search Bar */}
+                        <div className="relative">
+                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                            <input
+                                type="text"
+                                placeholder="Search users..."
+                                className="pl-10 pr-4 py-3 border border-green-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white/70 backdrop-blur-sm"
+                            />
+                        </div>
+                    </div>
+
+                    {/* Stats Cards */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div className="bg-gradient-to-br from-green-500 to-emerald-600 p-6 rounded-2xl text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <p className="text-green-100 text-sm font-medium">Total Users</p>
+                                    <p className="text-3xl font-bold">{totalUsers}</p>
+                                </div>
+                                <Users className="w-10 h-10 text-green-200" />
+                            </div>
+                        </div>
+
+                        <div className="bg-gradient-to-br from-emerald-500 to-teal-600 p-6 rounded-2xl text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <p className="text-emerald-100 text-sm font-medium">Administrators</p>
+                                    <p className="text-3xl font-bold">{adminCount}</p>
+                                </div>
+                                <Shield className="w-10 h-10 text-emerald-200" />
+                            </div>
+                        </div>
+
+                        <div className="bg-gradient-to-br from-teal-500 to-cyan-600 p-6 rounded-2xl text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <p className="text-teal-100 text-sm font-medium">Regular Users</p>
+                                    <p className="text-3xl font-bold">{userCount}</p>
+                                </div>
+                                <UserCheck className="w-10 h-10 text-teal-200" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Table Section */}
+                <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-green-100 overflow-hidden">
+                    {status === 'loading' && (
+                        <div className="flex items-center justify-center py-20">
+                            <div className="flex flex-col items-center space-y-4">
+                                <div className="relative">
+                                    <div className="w-16 h-16 border-4 border-green-200 border-t-green-500 rounded-full animate-spin"></div>
+                                    <div className="absolute inset-0 w-16 h-16 border-4 border-transparent border-t-emerald-400 rounded-full animate-spin animation-delay-150"></div>
+                                </div>
+                                <p className="text-green-600 font-medium text-lg">Loading users...</p>
+                                <p className="text-gray-500 text-sm">Please wait while we fetch the data</p>
+                            </div>
+                        </div>
+                    )}
+                    
+                    {status === 'succeeded' && <UsersTable data={users} />}
+                    
+                    {status === 'failed' && (
+                        <div className="flex items-center justify-center py-20">
+                            <div className="text-center">
+                                <div className="bg-red-100 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                                    <span className="text-red-500 text-2xl">⚠️</span>
+                                </div>
+                                <p className="text-red-600 font-medium text-lg">Failed to load users</p>
+                                <p className="text-gray-500 text-sm mt-2">Please try refreshing the page</p>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </div>
         </div>
     );
 };
