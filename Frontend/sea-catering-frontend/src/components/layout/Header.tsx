@@ -95,12 +95,15 @@ const Header = () => {
                                     <span className="font-medium">Dashboard</span>
                                 </Link>
                             )}
+                            { user.role === 'user' && (
                             <Link
                                 to="/dashboard"
                                 className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-green-50 transition-colors duration-200 flex items-center space-x-2"
                             >
                                 <span className="font-medium">Dashboard</span>
                             </Link>
+                            )}
+
                             <button
                                 onClick={handleLogout}
                                 className="w-full text-left px-4 py-3 text-sm text-red-700 hover:bg-red-50 transition-colors duration-200 flex items-center space-x-2"

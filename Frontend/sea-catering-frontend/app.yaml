@@ -1,0 +1,15 @@
+runtime: nodejs20
+service: sea-catering-frontend 
+
+handlers:
+  - url: /(.*\.(js|css|png|jpg|jpeg|gif|ico|json|txt|svg|woff|woff2|ttf|eot|map))$
+    static_files: dist/\1
+    upload: dist/(.*\.(js|css|png|jpg|jpeg|gif|ico|json|txt|svg|woff|woff2|ttf|eot|map))$
+    secure: always
+    redirect_http_response_code: 301
+
+  - url: /.*
+    static_files: dist/index.html
+    upload: dist/index.html
+    secure: always
+    redirect_http_response_code: 301

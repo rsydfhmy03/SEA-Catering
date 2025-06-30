@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { register } from '../../services/api/authApi';
 import toast from 'react-hot-toast';
-import { User, Mail, Lock, Eye, EyeOff, UtensilsCrossed, ArrowRight, LogIn } from 'lucide-react';
+import { User, Mail, Lock, Eye, EyeOff, UtensilsCrossed, ArrowRight, LogIn, Check, X } from 'lucide-react';
 
 const RegisterPage = () => {
     const [fullName, setFullName] = useState('');
@@ -10,16 +10,61 @@ const RegisterPage = () => {
     const [password, setPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    const [hasStartedTyping, setHasStartedTyping] = useState({
+        fullName: false,
+        email: false,
+        password: false
+    });
     const navigate = useNavigate();
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    // Validation functions
+    const validateFullName = (name: string) => {
+        return {
+            minLength: name.trim().length >= 2,
+            maxLength: name.trim().length <= 100,
+            notEmpty: name.trim().length > 0
+        };
+    };
+
+    const validateEmail = (email : string ) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return {
+            format: emailRegex.test(email),
+            notEmpty: email.length > 0
+        };
+    };
+
+    const validatePassword = (password : string) => {
+        return {
+            minLength: password.length >= 8,
+            hasLowercase: /[a-z]/.test(password),
+            hasUppercase: /[A-Z]/.test(password),
+            hasNumber: /\d/.test(password),
+            hasSpecialChar: /[@$!%*?&#]/.test(password),
+            notEmpty: password.length > 0
+        };
+    };
+
+    // Get validation results
+    const fullNameValidation = validateFullName(fullName);
+    const emailValidation = validateEmail(email);
+    const passwordValidation = validatePassword(password);
+
+    // Calculate progress
+    const getValidationProgress = (validation: Record<string, boolean>) => {
+        const total = Object.keys(validation).length;
+        const valid = Object.values(validation).filter(Boolean).length;
+        return (valid / total) * 100;
+    };
+
+    const handleSubmit = async (e: { preventDefault: () => void; } ) => {
         e.preventDefault();
         setIsLoading(true);
         try {
             await register({ full_name: fullName, email, password });
             toast.success('Registration successful! Please log in.');
             navigate('/login');
-        } catch (error: unknown) {
+        } catch (error) {
             let errorMsg = 'Registration failed.';
             if (typeof error === 'object' && error !== null && 'response' in error) {
                 const err = error as { response?: { data?: { error?: { details?: { message?: string }[] } } } };
@@ -29,6 +74,98 @@ const RegisterPage = () => {
         } finally {
             setIsLoading(false);
         }
+    };
+
+    const isFormValid = 
+    Object.values(fullNameValidation).every(Boolean) &&
+    Object.values(emailValidation).every(Boolean) &&
+    Object.values(passwordValidation).every(Boolean);
+    type ValidationProgressProps = {
+        progress: number;
+        validations: Record<string, boolean>;
+        label: string;
+        show: boolean;
+    };
+
+    const ValidationProgress = ({ progress, validations, label, show }: ValidationProgressProps) => {
+        if (!show) return null;
+
+        return (
+            <div className="mt-3 p-4 bg-gray-50/80 backdrop-blur-sm rounded-xl border border-gray-100">
+                <div className="flex items-center justify-between mb-3">
+                    <span className="text-sm font-medium text-gray-700">{label} Requirements</span>
+                    <span className="text-xs text-gray-500">{Math.round(progress)}% complete</span>
+                </div>
+                
+                {/* Progress Bar */}
+                <div className="w-full bg-gray-200 rounded-full h-2 mb-3 overflow-hidden">
+                    <div 
+                        className={`h-2 rounded-full transition-all duration-500 ease-out ${
+                            progress === 100 
+                                ? 'bg-gradient-to-r from-green-500 to-emerald-500' 
+                                : 'bg-gradient-to-r from-blue-500 to-indigo-500'
+                        }`}
+                        style={{ width: `${progress}%` }}
+                    ></div>
+                </div>
+
+                {/* Validation Checklist */}
+                <div className="space-y-2">
+                    {Object.entries(validations).map(([key, isValid]) => {
+                        let requirement = '';
+                        switch (key) {
+                            case 'notEmpty':
+                                requirement = 'Field is not empty';
+                                break;
+                            case 'minLength':
+                                requirement = label === 'Full Name' ? 'At least 2 characters' : 'At least 8 characters';
+                                break;
+                            case 'maxLength':
+                                requirement = 'Maximum 100 characters';
+                                break;
+                            case 'format':
+                                requirement = 'Valid email format';
+                                break;
+                            case 'hasLowercase':
+                                requirement = 'Contains lowercase letter';
+                                break;
+                            case 'hasUppercase':
+                                requirement = 'Contains uppercase letter';
+                                break;
+                            case 'hasNumber':
+                                requirement = 'Contains number';
+                                break;
+                            case 'hasSpecialChar':
+                                requirement = 'Contains special character (@$!%*?&#)';
+                                break;
+                            default:
+                                requirement = key;
+                        }
+
+                        return (
+                            <div key={key} className="flex items-center gap-2">
+                                <div className={`flex-shrink-0 w-4 h-4 rounded-full flex items-center justify-center transition-all duration-300 ${
+                                    isValid 
+                                        ? 'bg-green-500 text-white scale-100' 
+                                        : 'bg-gray-300 text-gray-500 scale-90'
+                                }`}>
+                                    {isValid ? (
+                                        <Check className="h-3 w-3" />
+                                    ) : (
+                                        <X className="h-3 w-3" />
+                                    )}
+                                </div>
+                                <span className={`text-xs transition-colors duration-300 ${
+                                    isValid ? 'text-green-700 font-medium' : 'text-gray-600'
+                                }`}>
+                                    {requirement}
+                                </span>
+                            </div>
+                        );
+                    })}
+                </div>
+            </div>
+        );
     };
 
     return (
@@ -77,12 +214,23 @@ const RegisterPage = () => {
                                         id="full_name"
                                         type="text"
                                         value={fullName}
-                                        onChange={(e) => setFullName(e.target.value)}
+                                        onChange={(e) => {
+                                            setFullName(e.target.value);
+                                            if (!hasStartedTyping.fullName && e.target.value) {
+                                                setHasStartedTyping(prev => ({ ...prev, fullName: true }));
+                                            }
+                                        }}
                                         required
                                         className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all duration-200 bg-white/50 backdrop-blur-sm hover:bg-white/80"
                                         placeholder="Enter your full name"
                                     />
                                 </div>
+                                <ValidationProgress
+                                    progress={getValidationProgress(fullNameValidation)}
+                                    validations={fullNameValidation}
+                                    label="Full Name"
+                                    show={hasStartedTyping.fullName}
+                                />
                             </div>
 
                             {/* Email field */}
@@ -98,12 +246,23 @@ const RegisterPage = () => {
                                         id="email"
                                         type="email"
                                         value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
+                                        onChange={(e) => {
+                                            setEmail(e.target.value);
+                                            if (!hasStartedTyping.email && e.target.value) {
+                                                setHasStartedTyping(prev => ({ ...prev, email: true }));
+                                            }
+                                        }}
                                         required
                                         className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all duration-200 bg-white/50 backdrop-blur-sm hover:bg-white/80"
                                         placeholder="Enter your email"
                                     />
                                 </div>
+                                <ValidationProgress
+                                    progress={getValidationProgress(emailValidation)}
+                                    validations={emailValidation}
+                                    label="Email"
+                                    show={hasStartedTyping.email}
+                                />
                             </div>
 
                             {/* Password field */}
@@ -119,7 +278,12 @@ const RegisterPage = () => {
                                         id="password"
                                         type={showPassword ? 'text' : 'password'}
                                         value={password}
-                                        onChange={(e) => setPassword(e.target.value)}
+                                        onChange={(e) => {
+                                            setPassword(e.target.value);
+                                            if (!hasStartedTyping.password && e.target.value) {
+                                                setHasStartedTyping(prev => ({ ...prev, password: true }));
+                                            }
+                                        }}
                                         required
                                         className="block w-full pl-10 pr-12 py-3 border border-gray-200 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all duration-200 bg-white/50 backdrop-blur-sm hover:bg-white/80"
                                         placeholder="Enter your password"
@@ -136,12 +300,18 @@ const RegisterPage = () => {
                                         )}
                                     </button>
                                 </div>
+                                <ValidationProgress
+                                    progress={getValidationProgress(passwordValidation)}
+                                    validations={passwordValidation}
+                                    label="Password"
+                                    show={hasStartedTyping.password}
+                                />
                             </div>
 
                             {/* Submit button */}
                             <button 
                                 type="submit" 
-                                disabled={isLoading}
+                                disabled={isLoading || !isFormValid}
                                 className="w-full flex items-center justify-center gap-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold py-3.5 px-6 rounded-xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl disabled:cursor-not-allowed disabled:transform-none group"
                             >
                                 {isLoading ? (

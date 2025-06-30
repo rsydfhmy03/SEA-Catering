@@ -1,5 +1,5 @@
 import { Zap, Leaf, Truck, HeartHandshake , ArrowRight, CheckCircle } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import TestimonialForm from '../../components/forms/TestimonialForm';
 import { getApprovedTestimonials, type Testimonial } from '../../services/api/testimonialsApi';
 import { Star } from 'lucide-react';
@@ -36,24 +36,60 @@ const HeroVector = () => (
     </div>
 );
 
+
+
 const TestimonialsSection = () => {
     const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
-    const [key, setKey] = useState(0); // Untuk me-refresh list
-
-    const fetchTestimonials = async () => {
-         try {
-            const data = await getApprovedTestimonials();
-            setTestimonials(data);
-         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-         } catch (error) {
-            console.error("Could not fetch testimonials");
-         }
-    };
-
+    const [key, setKey] = useState(0);
+    const carouselRef = useRef<HTMLDivElement>(null);
+    const scrollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+    const cardWidth = 400; 
+    const gap = 20; 
     useEffect(() => {
+        const fetchTestimonials = async () => {
+            try {
+                const data = await getApprovedTestimonials();
+                setTestimonials(data);
+            } catch (error) {
+                console.error("Could not fetch testimonials", error);
+            }
+        };
         fetchTestimonials();
     }, [key]);
-
+    useEffect(() => {
+        const carousel = carouselRef.current;
+        if (!carousel || testimonials.length === 0) return;
+        
+        const autoScroll = () => {
+            if (!carousel) return;
+            
+            const maxScroll = carousel.scrollWidth - carousel.clientWidth;
+            const currentScroll = carousel.scrollLeft;
+            
+            if (currentScroll >= maxScroll - 10) {
+                
+                carousel.scrollTo({ 
+                    left: 0, 
+                    behavior: 'smooth' 
+                });
+            } else {
+                // Scroll ke card berikutnya
+                const nextScroll = currentScroll + cardWidth + gap;
+                carousel.scrollTo({ 
+                    left: nextScroll, 
+                    behavior: 'smooth' 
+                });
+            }
+        };
+        
+        scrollIntervalRef.current = setInterval(autoScroll, 3000);
+        
+        return () => {
+            if (scrollIntervalRef.current) {
+                clearInterval(scrollIntervalRef.current);
+            }
+        };
+    }, [testimonials]);
     return (
         <section className="py-20 sm:py-28 bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 relative overflow-hidden">
             {/* Background decorative elements */}
@@ -79,58 +115,57 @@ const TestimonialsSection = () => {
                         Real stories from our satisfied customers who have transformed their healthy eating journey with us.
                     </p>
                 </div>
-
                 {/* Enhanced Testimonial Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-20">
-                    {testimonials.length > 0 ? testimonials.map((t, index) => (
+                <div 
+                    ref={carouselRef}
+                    className="flex gap-6 overflow-x-auto snap-x snap-mandatory mb-20 scroll-smooth no-scrollbar"
+                    style={{ 
+                        scrollSnapType: 'x mandatory',
+                        scrollPadding: '0 24px',
+                    }}
+                >
+                    {testimonials.length > 0 ? testimonials.map((t) => (
                         <div 
                             key={t.id} 
-                            className="group bg-white/90 backdrop-blur-sm p-8 rounded-2xl shadow-lg hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-500 border border-green-100 relative overflow-hidden"
-                            style={{animationDelay: `${index * 0.1}s`}}
+                            className="flex-shrink-0 snap-start mb-4"
+                            style={{ width: `${cardWidth}px` }}
                         >
-                           
-                            <div className="absolute inset-0 bg-gradient-to-br from-green-50/50 to-emerald-50/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                            
-                            <div className="relative z-10">
-                             
-                                <div className="flex items-center justify-center mb-6">
-                                    <div className="flex items-center bg-gradient-to-r from-yellow-50 to-orange-50 px-4 py-2 rounded-full">
-                                        {[...Array(5)].map((_, i) => (
-                                            <Star 
-                                                key={i} 
-                                                className={`h-5 w-5 transition-colors duration-300 ${
-                                                    i < t.rating 
-                                                        ? 'text-yellow-400 fill-current drop-shadow-sm' 
-                                                        : 'text-gray-300'
-                                                }`} 
-                                            />
-                                        ))}
+                            <div className="bg-white/90 backdrop-blur-sm p-8 rounded-2xl shadow-lg hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-500 border border-green-100 relative overflow-hidden h-full">
+                                <div className="relative z-10">
+                                    <div className="flex items-center justify-center mb-6">
+                                        <div className="flex items-center bg-gradient-to-r from-yellow-50 to-orange-50 px-4 py-2 rounded-full">
+                                            {[...Array(5)].map((_, i) => (
+                                                <Star 
+                                                    key={i} 
+                                                    className={`h-5 w-5 transition-colors duration-300 ${
+                                                        i < t.rating 
+                                                            ? 'text-yellow-400 fill-current drop-shadow-sm' 
+                                                            : 'text-gray-300'
+                                                    }`} 
+                                                />
+                                            ))}
+                                        </div>
+                                    </div>
+                                    <div className="relative mb-6">
+                                        <div className="absolute -top-2 -left-2 text-6xl text-green-200 font-serif leading-none">"</div>
+                                        <p className="text-gray-700 italic text-lg leading-relaxed pl-8">
+                                            {t.review_message}
+                                        </p>
+                                        <div className="absolute -bottom-4 -right-2 text-6xl text-green-200 font-serif leading-none rotate-180">"</div>
+                                    </div>
+                                    <div className="flex items-center justify-end">
+                                        <div className="text-right">
+                                            <div className="w-12 h-0.5 bg-gradient-to-r from-green-400 to-emerald-400 ml-auto mb-2"></div>
+                                            <p className="font-bold text-gray-800 text-lg">{t.customer_name}</p>
+                                            <p className="text-sm text-green-600 font-medium">Verified Customer</p>
+                                        </div>
                                     </div>
                                 </div>
-                           
-                                <div className="relative mb-6">
-                                    <div className="absolute -top-2 -left-2 text-6xl text-green-200 font-serif leading-none">"</div>
-                                    <p className="text-gray-700 italic text-lg leading-relaxed pl-8">
-                                        {t.review_message}
-                                    </p>
-                                    <div className="absolute -bottom-4 -right-2 text-6xl text-green-200 font-serif leading-none rotate-180">"</div>
-                                </div>
-                                
-                             
-                                <div className="flex items-center justify-end">
-                                    <div className="text-right">
-                                        <div className="w-12 h-0.5 bg-gradient-to-r from-green-400 to-emerald-400 ml-auto mb-2"></div>
-                                        <p className="font-bold text-gray-800 text-lg">{t.customer_name}</p>
-                                        <p className="text-sm text-green-600 font-medium">Verified Customer</p>
-                                    </div>
-                                </div>
+                                <div className="absolute top-4 right-4 w-3 h-3 bg-gradient-to-br from-green-400 to-emerald-400 rounded-full opacity-60 group-hover:opacity-100 transition-opacity duration-300"></div>
                             </div>
-                            
-                    
-                            <div className="absolute top-4 right-4 w-3 h-3 bg-gradient-to-br from-green-400 to-emerald-400 rounded-full opacity-60 group-hover:opacity-100 transition-opacity duration-300"></div>
                         </div>
                     )) : (
-                        <div className="col-span-full">
+                        <div className="flex-shrink-0" style={{ width: '100%' }}>
                             <div className="bg-white/90 backdrop-blur-sm p-12 rounded-2xl shadow-lg text-center border border-green-100">
                                 <div className="inline-block p-4 bg-gradient-to-br from-green-100 to-emerald-100 rounded-full mb-4">
                                     <Star className="w-8 h-8 text-green-600" />
@@ -140,7 +175,6 @@ const TestimonialsSection = () => {
                         </div>
                     )}
                 </div>
-
                 <div className="max-w-4xl mx-auto">
                     <div className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-xl border border-green-100 overflow-hidden">
                         {/* Form header */}
@@ -196,12 +230,12 @@ const HomePage = () => {
             
             {/* Call to action buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
-              <button className="px-8 py-4 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 flex items-center gap-2 justify-center">
+              <a href="/subscription" className="px-8 py-4 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 flex items-center gap-2 justify-center">
                 Start Now <ArrowRight className="w-5 h-5" />
-              </button>
-              <button className="px-8 py-4 bg-white/90 backdrop-blur-sm text-green-700 font-semibold rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 border border-green-200">
+              </a>
+              <a href="/menu" className="px-8 py-4 bg-white/90 backdrop-blur-sm text-green-700 font-semibold rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 border border-green-200">
                 View Menu
-              </button>
+              </a>
             </div>
           </div>
         </div>

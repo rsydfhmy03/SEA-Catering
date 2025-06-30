@@ -9,7 +9,7 @@ export default class AdminTestimonialsController {
     this.testimonialRepository = new TestimonialRepository()
   }
 
-  async index({ request, response }: HttpContext) {
+  async index({ response }: HttpContext) {
     try {
       const testimonials = await this.testimonialRepository.findAll()
 
