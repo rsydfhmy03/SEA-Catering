@@ -48,7 +48,7 @@ const SubscriptionCard = ({ sub, onRefetch, index }: { sub: Subscription, onRefe
     
     return (
         <div 
-            className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 border border-gray-100 hover:border-green-200 hover:-translate-y-2 overflow-hidden"
+            className="group flex-col h-full bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 border border-gray-100 hover:border-green-200 hover:-translate-y-2 overflow-hidden"
             style={{
                 animationDelay: `${index * 100}ms`,
                 animation: `fadeInUp 0.6s ease-out forwards`
@@ -174,10 +174,10 @@ const SubscriptionCard = ({ sub, onRefetch, index }: { sub: Subscription, onRefe
             {/* Pause Modal */}
             {isPauseModalOpen && (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-center items-center z-50 animate-fadeIn">
-                    <div className="bg-white p-8 rounded-2xl w-full max-w-md mx-4 shadow-2xl animate-scaleIn">
-                        <h4 className="font-bold text-2xl mb-4 text-gray-800">Pause Subscription</h4>
-                        <p className="mb-6 text-gray-600">Select the date range to pause your subscription.</p>
-                        
+                    <div className="bg-white p-3 rounded-2xl w-[92%] max-w-md mx-4 shadow-2xl animate-scaleIn">
+                        <h4 className="font-bold text-lg mb-1 text-gray-800">Paused Subscription</h4>
+                        <p className="mb-3 text-gray-600 text-sm">Select the date range to pause your subscription.</p>
+                        <div className="mb-4 flex justify-center">
                         <ReactDatePicker 
                             selectsRange
                             startDate={pauseDates[0]}
@@ -185,19 +185,19 @@ const SubscriptionCard = ({ sub, onRefetch, index }: { sub: Subscription, onRefe
                             onChange={(update) => setPauseDates(update)}
                             minDate={new Date()}
                             inline
-                            className="w-full"
+                            className="!w-full max-w-[280px] mb-4 rounded-lg border border-gray-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
                         />
-                        
-                        <div className="flex justify-end gap-3 mt-6">
+                        </div>
+                        <div className="flex justify-end gap-4 mt-2">
                             <button 
                                 onClick={() => setPauseModalOpen(false)}
-                                className="px-6 py-3 text-gray-600 hover:text-gray-800 font-semibold rounded-xl hover:bg-gray-100 transition-all duration-300"
+                                className="px-9 py-3 text-gray-600 hover:text-gray-800 font-semibold rounded-xl hover:bg-gray-100 transition-all duration-300"
                             >
                                 Cancel
                             </button>
                             <button 
                                 onClick={handlePause}
-                                className="px-6 py-3 bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white font-semibold rounded-xl transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:transform-none"
+                                className="px-9 py-3 bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white font-semibold rounded-xl transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:transform-none"
                                 disabled={!pauseDates[0] || !pauseDates[1]}
                             >
                                 Confirm Pause
@@ -317,7 +317,7 @@ const UserDashboardPage = () => {
                                         </div>
                                     </div>
                                 ) : (
-                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
                                         {activeItems.map((sub, index) => (
                                             <SubscriptionCard key={sub.id} sub={sub} onRefetch={fetchSubs} index={index} />
                                         ))}
@@ -339,7 +339,7 @@ const UserDashboardPage = () => {
                                         </div>
                                     </div>
                                 ) : (
-                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
                                         {pausedItems.map((sub, index) => (
                                             <SubscriptionCard key={sub.id} sub={sub} onRefetch={fetchSubs} index={index} />
                                         ))}
